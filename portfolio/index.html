@@ -59,8 +59,8 @@
       <p class="hero__sub load" style="--d:.82s">Business and Engineering student at THWS, graduating March 2027. Agentic AI and AI Integration Intern at Surfgreen GmbH.</p>
       <div class="hero__cta load" style="--d:.95s">
         <a class="btn btn--red magnetic" href="#projects">View projects</a>
-        <a class="btn btn--ghost magnetic js-mail" data-u="akhiljijimon" data-d="gmail.com" href="#contact">Email me</a>
-        <a class="btn btn--ghost magnetic js-mail" data-u="akhiljijimon" data-d="gmail.com" data-subject="CV request" href="#contact">Request my CV</a>
+        <a class="btn btn--ghost magnetic js-mail" data-u="akhiljijimon" data-d="gmail.com" data-subject="Hello from your portfolio" href="#contact">Email me</a>
+        <a class="btn btn--ghost magnetic js-mail" data-u="akhiljijimon" data-d="gmail.com" data-subject="CV request" data-body="Hello Akhil,&#10;&#10;I would like to receive your CV.&#10;&#10;Name:&#10;Company:&#10;Role:&#10;&#10;Best regards," href="#contact">Request my CV</a>
       </div>
     </div>
 
@@ -514,8 +514,8 @@
     <h2 class="display contact__title reveal">Let's <span class="grad">connect</span></h2>
     <p class="contact__lead reveal">I am open to master's programmes and to roles in agentic AI, AI integration and process automation. The quickest way to reach me is email.</p>
     <div class="contact__cta reveal">
-      <a class="btn btn--red btn--lg magnetic js-mail" data-u="akhiljijimon" data-d="gmail.com" href="#contact">Email me</a>
-      <a class="btn btn--ghost btn--lg magnetic js-mail" data-u="akhiljijimon" data-d="gmail.com" data-subject="CV request" href="#contact">Request my CV</a>
+      <a class="btn btn--red btn--lg magnetic js-mail" data-u="akhiljijimon" data-d="gmail.com" data-subject="Hello from your portfolio" href="#contact">Email me</a>
+      <a class="btn btn--ghost btn--lg magnetic js-mail" data-u="akhiljijimon" data-d="gmail.com" data-subject="CV request" data-body="Hello Akhil,&#10;&#10;I would like to receive your CV.&#10;&#10;Name:&#10;Company:&#10;Role:&#10;&#10;Best regards," href="#contact">Request my CV</a>
       <a class="btn btn--ghost btn--lg magnetic" href="https://www.linkedin.com/in/akhil-esthapan-jijimon" target="_blank" rel="noopener noreferrer">LinkedIn</a>
     </div>
     <p class="contact__mail reveal"><span class="js-mailtext" data-u="akhiljijimon" data-d="gmail.com">akhiljijimon [at] gmail.com</span> <button class="copy" id="copyMail" type="button">Copy</button></p>
@@ -532,6 +532,19 @@
     <a class="top" href="#top">Back to top ↑</a>
   </div>
 </footer>
+
+<dialog class="mailpick" id="mailPick" aria-labelledby="mailPickTitle">
+  <button class="mailpick__x" type="button" data-close aria-label="Close">&times;</button>
+  <p class="eyebrow"><span class="dot"></span>Contact</p>
+  <h3 class="display mailpick__title" id="mailPickTitle">Email me</h3>
+  <p class="mailpick__addr" id="mailPickAddr"></p>
+  <div class="mailpick__opts">
+    <a class="btn btn--red" id="mpGmail" target="_blank" rel="noopener noreferrer">Open in Gmail</a>
+    <a class="btn btn--ghost" id="mpOutlook" target="_blank" rel="noopener noreferrer">Open in Outlook</a>
+    <a class="btn btn--ghost" id="mpApp">Use my mail app</a>
+    <button class="btn btn--ghost" id="mpCopy" type="button">Copy address</button>
+  </div>
+</dialog>
 
 <script src="assets/main.js" defer></script>
 </body>

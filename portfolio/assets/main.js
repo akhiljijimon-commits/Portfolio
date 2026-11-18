@@ -165,22 +165,59 @@
     });
   });
 
-  /* 9. Email: built here so the address is not sitting in the HTML for spam bots */
+  /* 9. Email: built here so the address is not sitting in the HTML for spam bots.
+     A plain mailto: link does nothing for visitors without a mail app set up,
+     so the buttons open a small chooser: Gmail, Outlook, mail app or copy. */
   function addr(el) { return el.dataset.u + '@' + el.dataset.d; }
+  function mailto(a) {
+    var q = [];
+    if (a.dataset.subject) q.push('subject=' + encodeURIComponent(a.dataset.subject));
+    if (a.dataset.body) q.push('body=' + encodeURIComponent(a.dataset.body));
+    return 'mailto:' + addr(a) + (q.length ? '?' + q.join('&') : '');
+  }
+  function copyText(text, btn, label) {
+    var done = function () {
+      btn.textContent = 'Copied'; btn.classList.add('is-done');
+      setTimeout(function () { btn.textContent = label; btn.classList.remove('is-done'); }, 1800);
+    };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+    function fallback() {
+      var t = document.createElement('textarea'); t.value = text; t.setAttribute('readonly', '');
+      t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); done(); } catch (e) { window.prompt('Copy my address:', text); }
+      document.body.removeChild(t);
+    }
+  }
+  var pick = $('#mailPick');
+  var canPick = pick && typeof pick.showModal === 'function';
   $$('.js-mail').forEach(function (a) {
-    var s = a.dataset.subject ? '?subject=' + encodeURIComponent(a.dataset.subject) : '';
-    a.href = 'mailto:' + addr(a) + s;
+    a.href = mailto(a);
+    if (!canPick) return; // very old browsers keep the plain mailto: link
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var to = addr(a), su = a.dataset.subject || '', body = a.dataset.body || '';
+      $('#mailPickTitle').textContent = a.textContent.trim();
+      $('#mailPickAddr').textContent = to;
+      $('#mpGmail').href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(to) +
+        '&su=' + encodeURIComponent(su) + '&body=' + encodeURIComponent(body);
+      $('#mpOutlook').href = 'https://outlook.live.com/mail/0/deeplink/compose?to=' + encodeURIComponent(to) +
+        '&subject=' + encodeURIComponent(su) + '&body=' + encodeURIComponent(body);
+      $('#mpApp').href = mailto(a);
+      pick.showModal();
+    });
   });
+  if (canPick) {
+    pick.addEventListener('click', function (e) {
+      // close on the x, on a chosen option, or on a click outside the box
+      if (e.target === pick || e.target.closest('[data-close]') || e.target.closest('a')) pick.close();
+    });
+    $('#mpCopy').addEventListener('click', function () { copyText($('#mailPickAddr').textContent, this, 'Copy address'); });
+  }
   $$('.js-mailtext').forEach(function (el) { el.textContent = addr(el); });
   var copy = $('#copyMail'), mailText = $('.js-mailtext');
   if (copy && mailText) {
-    if (!navigator.clipboard) copy.hidden = true;
-    copy.addEventListener('click', function () {
-      navigator.clipboard.writeText(addr(mailText)).then(function () {
-        copy.textContent = 'Copied'; copy.classList.add('is-done');
-        setTimeout(function () { copy.textContent = 'Copy'; copy.classList.remove('is-done'); }, 1800);
-      });
-    });
+    copy.addEventListener('click', function () { copyText(addr(mailText), copy, 'Copy'); });
   }
 
   /* 10. Hero background: a drifting network of connected points, like a neural network */
