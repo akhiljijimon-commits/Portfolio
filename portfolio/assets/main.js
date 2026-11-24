@@ -147,24 +147,6 @@
     }
   }
 
-  /* 8. Project filter */
-  var filters = $$('.filter'), projects = $$('.project');
-  filters.forEach(function (f) {
-    f.addEventListener('click', function () {
-      var cat = f.dataset.filter;
-      filters.forEach(function (o) { var on = o === f; o.classList.toggle('is-on', on); o.setAttribute('aria-pressed', String(on)); });
-      projects.forEach(function (p, i) {
-        var show = cat === 'all' || p.dataset.cat.split(' ').indexOf(cat) > -1;
-        p.classList.toggle('is-hidden', !show);
-        if (show && !reduce && p.animate) {
-          p.classList.add('is-in');
-          p.animate([{ opacity: 0, transform: 'translateY(18px) scale(.98)' }, { opacity: 1, transform: 'none' }],
-            { duration: 500, delay: (i % 6) * 40, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'backwards' });
-        }
-      });
-    });
-  });
-
   /* 9. Email: built here so the address is not sitting in the HTML for spam bots.
      Clicking "Email me" or "Request my CV" opens a new email draft with my address
      already in the To field. On a computer the draft opens in Gmail in a new tab,
@@ -253,66 +235,6 @@
       var on = en[0].isIntersecting;
       if (on && !running) { running = true; requestAnimationFrame(drawNet); } else if (!on) running = false;
     }).observe(heroEl);
-  }
-
-  /* 11. Slider of animated illustrations: arrows, drag, dots, gentle auto-slide */
-  var slider = $('#slider');
-  if (slider) {
-    var slides = $$('.slide', slider), prev = $('#slidePrev'), next = $('#slideNext'), dots = $('#sliderDots');
-    var stepW = function () { return slides[1].offsetLeft - slides[0].offsetLeft; };
-    var maxS = function () { return slider.scrollWidth - slider.clientWidth; };
-    var current = function () { return Math.min(slides.length - 1, Math.round(slider.scrollLeft / stepW())); };
-    slides.forEach(function () { dots.appendChild(document.createElement('i')); });
-    var sync = function () {
-      var c = slider.scrollLeft >= maxS() - 4 ? slides.length - 1 : current();
-      $$('i', dots).forEach(function (d, i) { d.classList.toggle('is-on', i === c); });
-      prev.disabled = slider.scrollLeft < 4;
-      next.disabled = slider.scrollLeft >= maxS() - 4;
-    };
-    var go = function (dir) { slider.scrollBy({ left: dir * stepW(), behavior: reduce ? 'auto' : 'smooth' }); };
-    prev.addEventListener('click', function () { go(-1); stopAuto(); });
-    next.addEventListener('click', function () { go(1); stopAuto(); });
-    slider.addEventListener('scroll', function () { requestAnimationFrame(sync); }, { passive: true });
-    slider.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight') { go(1); stopAuto(); } else if (e.key === 'ArrowLeft') { go(-1); stopAuto(); }
-    });
-    // drag with the mouse
-    var down = false, sx = 0, sl = 0, moved = false;
-    slider.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') return; down = true; moved = false; sx = e.clientX; sl = slider.scrollLeft; });
-    window.addEventListener('pointermove', function (e) {
-      if (!down) return;
-      if (Math.abs(e.clientX - sx) > 4) { moved = true; slider.classList.add('is-drag'); stopAuto(); }
-      if (moved) slider.scrollLeft = sl - (e.clientX - sx);
-    });
-    window.addEventListener('pointerup', function () {
-      if (!down) return; down = false;
-      if (moved) { slider.classList.remove('is-drag'); slider.scrollTo({ left: current() * stepW(), behavior: 'smooth' }); }
-    });
-    // the drawings only run while their card is visible
-    if ('IntersectionObserver' in window) {
-      var live = new IntersectionObserver(function (en) {
-        en.forEach(function (e) { e.target.classList.toggle('is-live', e.isIntersecting); });
-      }, { threshold: 0.25 });
-      slides.forEach(function (s) { live.observe(s); });
-    } else slides.forEach(function (s) { s.classList.add('is-live'); });
-    // auto-slide every few seconds until the visitor takes over
-    var timer = null, auto = !reduce;
-    function stopAuto() { auto = false; clearInterval(timer); timer = null; }
-    function startAuto() {
-      if (!auto || timer) return;
-      timer = setInterval(function () {
-        if (slider.matches(':hover')) return;
-        if (slider.scrollLeft >= maxS() - 4) slider.scrollTo({ left: 0, behavior: 'smooth' }); else go(1);
-      }, 4200);
-    }
-    slider.addEventListener('touchstart', stopAuto, { passive: true });
-    slider.addEventListener('wheel', stopAuto, { passive: true });
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (en) {
-        if (en[0].isIntersecting) startAuto(); else { clearInterval(timer); timer = null; }
-      }, { threshold: 0.4 }).observe(slider);
-    }
-    sync();
   }
 
   var year = $('#year'); if (year) year.textContent = new Date().getFullYear();
